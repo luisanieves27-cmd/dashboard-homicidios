@@ -5,8 +5,11 @@ import plotly.express as px
 # Configuración de la página
 st.set_page_config(page_title="Tablero de Homicidios", layout="wide")
 
-# Cargar datos
+# ================= Cargar y preparar datos =================
 df = pd.read_excel("homicidio.xlsx")
+
+# Limpiar nombres de columnas (quita espacios invisibles, mayúsculas/minúsculas)
+df.columns = df.columns.str.strip()
 
 # Procesar fechas
 df["FECHA HECHO"] = pd.to_datetime(df["FECHA HECHO"], errors="coerce")
@@ -19,11 +22,11 @@ azul2 = "#0055A4"
 azul3 = "#0077CC"
 azul4 = "#3399FF"
 
-# Título y descripción
+# ================= Título y descripción =================
 st.markdown(f"<h1 style='color:{azul2};'>📊 Tablero de Homicidios en Colombia</h1>", unsafe_allow_html=True)
 st.markdown("Análisis interactivo de los homicidios registrados en la base de datos oficial.")
 
-# --- Filtros en barra lateral ---
+# ================= Filtros =================
 st.sidebar.header("Filtros")
 anios = sorted(df["AÑO"].dropna().unique())
 departamentos = sorted(df["DEPARTAMENTO"].dropna().unique())
