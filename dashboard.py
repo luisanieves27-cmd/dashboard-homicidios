@@ -131,8 +131,8 @@ with tab4:
         if not df_cund_mun.empty:
             top_gen_cund = df_cund_mun.groupby("GENERO")["CANTIDAD"].sum().idxmax()
             casos_cund = df_cund_mun.groupby("GENERO")["CANTIDAD"].sum().max()
-            st.markdown(f"En Cundinamarca, el municipio con más homicidios es **{top_mun_cund}**. "
-                        f"El género más afectado fue **{top_gen_cund}** con **{casos_cund} casos**.")
+            st.markdown(f"**1️⃣ Cundinamarca:** Municipio con más homicidios: **{top_mun_cund}**. "
+                        f"Género más afectado: **{top_gen_cund}** con **{casos_cund} casos**.")
             fig_q1 = px.bar(df_cund_mun, x="GENERO", y="CANTIDAD",
                             title=f"Género más afectado en {top_mun_cund} (Cundinamarca)",
                             color="GENERO",
@@ -143,54 +143,17 @@ with tab4:
     else:
         st.markdown("No hay datos de homicidios en Cundinamarca.")
 
-    # 2️⃣ Valle del Cauca
-    df_valle = df[df["DEPARTAMENTO"] == "VALLE DEL CAUCA"]
+    # 2️⃣ Valle (VALLE)
+    df_valle = df[df["DEPARTAMENTO"] == "VALLE"]
     if not df_valle.empty:
         top_mun_valle = df_valle.groupby("MUNICIPIO")["CANTIDAD"].sum().idxmax()
         df_valle_masc = df_valle[(df_valle["MUNICIPIO"] == top_mun_valle) & (df_valle["GENERO"] == "MASCULINO")]
         if not df_valle_masc.empty:
             arma_valle = df_valle_masc.groupby("ARMA MEDIO")["CANTIDAD"].sum().idxmax()
             casos_valle = df_valle_masc.groupby("ARMA MEDIO")["CANTIDAD"].sum().max()
-            st.markdown(f"En Valle del Cauca, el municipio con más homicidios es **{top_mun_valle}**. "
-                        f"El arma más usada contra hombres fue **{arma_valle}** con **{casos_valle} casos**.")
+            st.markdown(f"**2️⃣ Valle:** Municipio con más homicidios: **{top_mun_valle}**. "
+                        f"Arma más usada contra hombres: **{arma_valle}** con **{casos_valle} casos**.")
             fig_q2 = px.bar(df_valle_masc, x="ARMA MEDIO", y="CANTIDAD",
-                            title=f"Armas usadas contra hombres en {top_mun_valle} (Valle del Cauca)",
+                            title=f"Armas usadas contra hombres en {top_mun_valle} (Valle)",
                             color="ARMA MEDIO",
                             color_discrete_sequence=px.colors.sequential.Blues_r)
-            st.plotly_chart(fig_q2, use_container_width=True)
-        else:
-            st.markdown(f"En Valle del Cauca, el municipio con más homicidios es **{top_mun_valle}**, pero no hay datos de víctimas masculinas.")
-    else:
-        st.markdown("No hay datos de homicidios en Valle del Cauca.")
-
-    # 3️⃣ Antioquia 2024
-    df_ant = df[(df["DEPARTAMENTO"] == "ANTIOQUIA") & (df["AÑO"] == 2024)]
-    if not df_ant.empty:
-        mes_ant = df_ant.groupby("MES")["CANTIDAD"].sum().idxmax()
-        casos_ant = df_ant.groupby("MES")["CANTIDAD"].sum().max()
-        st.markdown(f"En Antioquia, el mes más crítico de 2024 fue **{mes_ant}** con **{casos_ant} casos**.")
-        fig_q3 = px.bar(df_ant, x="MES", y="CANTIDAD",
-                        title="Homicidios por mes en Antioquia (2024)",
-                        color="MES",
-                        color_discrete_sequence=px.colors.sequential.Blues)
-        st.plotly_chart(fig_q3, use_container_width=True)
-    else:
-        st.markdown("No hay datos de homicidios en Antioquia para 2024.")
-
-    # 4️⃣ Atlántico: Barranquilla vs Soledad
-    df_atl = df[df["DEPARTAMENTO"] == "ATLÁNTICO"]
-    casos_barr = df_atl[df_atl["MUNICIPIO"] == "BARRANQUILLA"]["CANTIDAD"].sum() if not df_atl[df_atl["MUNICIPIO"] == "BARRANQUILLA"].empty else 0
-    casos_sol = df_atl[df_atl["MUNICIPIO"] == "SOLEDAD"]["CANTIDAD"].sum() if not df_atl[df_atl["MUNICIPIO"] == "SOLEDAD"].empty else 0
-
-    if casos_barr > casos_sol:
-        muni_mayor = "BARRANQUILLA"
-        dif = casos_barr - casos_sol
-    elif casos_sol > casos_barr:
-        muni_mayor = "SOLEDAD"
-        dif = casos_sol - casos_barr
-    else:
-        muni_mayor = "EMPATE"
-        dif = 0
-
-    st.markdown(f"En Atlántico: Barranquilla tuvo **{casos_barr} casos**, Soledad tuvo **{casos_sol} casos**. "
-                f"El municipio con más homicidios fue **{muni_mayor}**, con una diferencia de **{dif} casos**.")
