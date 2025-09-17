@@ -8,7 +8,7 @@ st.set_page_config(page_title="Tablero de Homicidios", layout="wide")
 # ================= Cargar y preparar datos =================
 df = pd.read_excel("homicidio.xlsx")
 
-# Limpiar nombres de columnas (quita espacios invisibles, mayúsculas/minúsculas)
+# Limpiar nombres de columnas
 df.columns = df.columns.str.strip()
 
 # Procesar fechas
@@ -123,7 +123,7 @@ with tab3:
 with tab4:
     st.subheader("📑 Respuestas automáticas a las preguntas (con soporte gráfico)")
 
-    # 1️⃣ Género más afectado en municipio top de Cundinamarca
+    # 1️⃣ Cundinamarca
     df_cund = df[df["DEPARTAMENTO"] == "CUNDINAMARCA"]
     if not df_cund.empty:
         top_mun_cund = df_cund.groupby("MUNICIPIO")["CANTIDAD"].sum().idxmax()
@@ -143,7 +143,7 @@ with tab4:
     else:
         st.markdown("No hay datos de homicidios en Cundinamarca.")
 
-    # 2️⃣ Valle del Cauca: municipio con más homicidios y arma más usada contra hombres
+    # 2️⃣ Valle del Cauca
     df_valle = df[df["DEPARTAMENTO"] == "VALLE DEL CAUCA"]
     if not df_valle.empty:
         top_mun_valle = df_valle.groupby("MUNICIPIO")["CANTIDAD"].sum().idxmax()
@@ -163,7 +163,7 @@ with tab4:
     else:
         st.markdown("No hay datos de homicidios en Valle del Cauca.")
 
-    # 3️⃣ Mes crítico en Antioquia 2024
+    # 3️⃣ Antioquia 2024
     df_ant = df[(df["DEPARTAMENTO"] == "ANTIOQUIA") & (df["AÑO"] == 2024)]
     if not df_ant.empty:
         mes_ant = df_ant.groupby("MES")["CANTIDAD"].sum().idxmax()
@@ -177,10 +177,11 @@ with tab4:
     else:
         st.markdown("No hay datos de homicidios en Antioquia para 2024.")
 
-    # 4️⃣ Comparación Barranquilla vs Soledad en Atlántico
+    # 4️⃣ Atlántico: Barranquilla vs Soledad
     df_atl = df[df["DEPARTAMENTO"] == "ATLÁNTICO"]
     casos_barr = df_atl[df_atl["MUNICIPIO"] == "BARRANQUILLA"]["CANTIDAD"].sum() if not df_atl[df_atl["MUNICIPIO"] == "BARRANQUILLA"].empty else 0
     casos_sol = df_atl[df_atl["MUNICIPIO"] == "SOLEDAD"]["CANTIDAD"].sum() if not df_atl[df_atl["MUNICIPIO"] == "SOLEDAD"].empty else 0
+
     if casos_barr > casos_sol:
         muni_mayor = "BARRANQUILLA"
         dif = casos_barr - casos_sol
@@ -188,7 +189,8 @@ with tab4:
         muni_mayor = "SOLEDAD"
         dif = casos_sol - casos_barr
     else:
-    muni_mayor = "EMPATE"
-    dif = 0
-st.markdown(f"En Atlántico: Barranquilla tuvo **{casos_barr} casos**, Soledad tuvo **{casos_sol} casos**. "
-            f"El municipio con más homicidios fue **{muni_mayor}**, con una diferencia de **{dif} casos**.")
+        muni_mayor = "EMPATE"
+        dif = 0
+
+    st.markdown(f"En Atlántico: Barranquilla tuvo **{casos_barr} casos**, Soledad tuvo **{casos_sol} casos**. "
+                f"El municipio con más homicidios fue **{muni_mayor}**, con una diferencia de **{dif} casos**.")
