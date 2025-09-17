@@ -116,3 +116,78 @@ with tab3:
     st.plotly_chart(fig6, use_container_width=True)
 
     st.dataframe(top_mun)
+# 📑 Respuestas al trabajo
+
+with tab4:
+    st.subheader("📑 Respuestas automáticas a las preguntas (con soporte gráfico)")
+
+    # 1. Género más afectado en municipio top de Cundinamarca
+    df_cund = df[df["DEPARTAMENTO"] == "CUNDINAMARCA"]
+    top_mun_cund = df_cund.groupby("MUNICIPIO")["CANTIDAD"].sum().idxmax()
+    df_cund_mun = df_cund[df_cund["MUNICIPIO"] == top_mun_cund]
+    top_gen_cund = df_cund_mun.groupby("GENERO")["CANTIDAD"].sum().idxmax()
+    casos_cund = df_cund_mun.groupby("GENERO")["CANTIDAD"].sum().max()
+    st.markdown(f"**1.** En Cundinamarca, el municipio con más homicidios es **{top_mun_cund}**. "
+                f"El género más afectado fue **{top_gen_cund}** con **{casos_cund} casos**.")
+    fig_q1 = px.bar(df_cund_mun, x="GENERO", y="CANTIDAD",
+                    title=f"Género más afectado en {top_mun_cund} (Cundinamarca)",
+                    color="GENERO",
+                    color_discrete_sequence=px.colors.sequential.Blues)
+    st.plotly_chart(fig_q1, use_container_width=True)
+
+    # 2. Arma más usada en víctimas masculinas en Valle del Cauca
+    df_valle = df[df["DEPARTAMENTO"] == "VALLE DEL CAUCA"]
+    top_mun_valle = df_valle.groupby("MUNICIPIO")["CANTIDAD"].sum().idxmax()
+    df_valle_masc = df_valle[(df_valle["MUNICIPIO"] == top_mun_valle) & (df_valle["GENERO"] == "MASCULINO")]
+    arma_valle = df_valle_masc.groupby("ARMA MEDIO")["CANTIDAD"].sum().idxmax()
+    casos_valle = df_valle_masc.groupby("ARMA MEDIO")["CANTIDAD"].sum().max()
+    st.markdown(f"**2.** En Valle del Cauca, el municipio con más homicidios es **{top_mun_valle}**. "
+                f"El arma más usada contra hombres fue **{arma_valle}** con **{casos_valle} casos**.")
+    fig_q2 = px.bar(df_valle_masc, x="ARMA MEDIO", y="CANTIDAD",
+                    title=f"Armas usadas contra hombres en {top_mun_valle} (Valle del Cauca)",
+                    color="ARMA MEDIO",
+                    color_discrete_sequence=px.colors.sequential.Blues_r)
+    st.plotly_chart(fig_q2, use_container_width=True)
+
+    # 3. Mes crítico en Antioquia en 2024
+    df_ant = df[(df["DEPARTAMENTO"] == "ANTIOQUIA") & (df["AÑO"] == 2024)]
+    mes_ant = df_ant.groupby("MES")["CANTIDAD"].sum().idxmax()
+    casos_ant = df_ant.groupby("MES")["CANTIDAD"].sum().max()
+    st.markdown(f"**3.** En Antioquia, el mes más crítico de 2024 fue **{mes_ant}** con **{casos_ant} casos**.")
+    fig_q3 = px.bar(df_ant, x="MES", y="CANTIDAD",
+                    title="Homicidios por mes en Antioquia (2024)",
+                    color="MES",
+                    color_discrete_sequence=px.colors.sequential.Blues)
+    st.plotly_chart(fig_q3, use_container_width=True)
+
+    # 4. Comparación Barranquilla vs Soledad en Atlántico
+    df_atl = df[df["DEPARTAMENTO"] == "ATLÁNTICO"]
+    casos_barr = df_atl[df_atl["MUNICIPIO"] == "BARRANQUILLA"]["CANTIDAD"].sum()
+    casos_sol = df_atl[df_atl["MUNICIPIO"] == "SOLEDAD"]["CANTIDAD"].sum()
+    muni_mayor = "BARRANQUILLA" if casos_barr > casos_sol else "SOLEDAD"
+    dif = abs(casos_barr - casos_sol)
+    st.markdown(f"**4.** En Atlántico: Barranquilla tuvo **{casos_barr} casos**, Soledad tuvo **{casos_sol} casos**. "
+                f"El municipio con más homicidios fue **{muni_mayor}**, con una diferencia de **{dif} casos**.")
+    df_comp = pd.DataFrame({
+        "Municipio": ["BARRANQUILLA", "SOLEDAD"],
+        "Casos": [casos_barr, casos_sol]
+    })
+    fig_q4 = px.bar(df_comp, x="Municipio", y="Casos",
+                    title="Comparación: Barranquilla vs Soledad (Atlántico)",
+                    color="Municipio",
+                    color_discrete_sequence=[azul2, azul4])
+    st.plotly_chart(fig_q4, use_container_width=True)
+
+    # 5. Arma más usada contra mujeres en Santander
+    df_sant = df[df["DEPARTAMENTO"] == "SANTANDER"]
+    top_mun_sant = df_sant.groupby("MUNICIPIO")["CANTIDAD"].sum().idxmax()
+    df_sant_fem = df_sant[(df_sant["MUNICIPIO"] == top_mun_sant) & (df_sant["GENERO"] == "FEMENINO")]
+    arma_sant = df_sant_fem.groupby("ARMA MEDIO")["CANTIDAD"].sum().idxmax()
+    casos_sant = df_sant_fem.groupby("ARMA MEDIO")["CANTIDAD"].sum().max()
+    st.markdown(f"**5.** En Santander, el municipio con más homicidios es **{top_mun_sant}**. "
+                f"El arma más usada contra mujeres fue **{arma_sant}** con **{casos_sant} casos**.")
+    fig_q5 = px.bar(df_sant_fem, x="ARMA MEDIO", y="CANTIDAD",
+                    title=f"Armas usadas contra mujeres en {top_mun_sant} (Santander)",
+                    color="ARMA MEDIO",
+                    color_discrete_sequence=px.colors.sequential.Blues_r)
+    st.plotly_chart(fig_q5, use_container_width=True)
