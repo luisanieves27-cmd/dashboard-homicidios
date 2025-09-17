@@ -188,3 +188,7 @@ with tab4:
         muni_mayor = "SOLEDAD"
         dif = casos_sol - casos_barr
     else:
+    muni_mayor = "EMPATE"
+    dif = 0
+st.markdown(f"En Atlántico: Barranquilla tuvo **{casos_barr} casos**, Soledad tuvo **{casos_sol} casos**. "
+            f"El municipio con más homicidios fue **{muni_mayor}**, con una diferencia de **{dif} casos**.")
