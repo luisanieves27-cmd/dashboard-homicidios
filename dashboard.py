@@ -64,7 +64,7 @@ col5.metric("Departamento crítico", depto_top)
 st.markdown("---")
 
 # ================= Pestañas =================
-tab1, tab2, tab3 = st.tabs(["📈 Tendencias", "📊 Comparativos", "📍 Municipios"])
+tab1, tab2, tab3, tab4 = st.tabs(["📈 Tendencias", "📊 Comparativos", "📍 Municipios", "📑 Respuestas"])
 
 # 📈 Tendencias
 with tab1:
@@ -114,10 +114,9 @@ with tab3:
                   color="CANTIDAD",
                   color_continuous_scale="Blues")
     st.plotly_chart(fig6, use_container_width=True)
-
     st.dataframe(top_mun)
-# 📑 Respuestas al trabajo
 
+# 📑 Respuestas automáticas
 with tab4:
     st.subheader("📑 Respuestas automáticas a las preguntas (con soporte gráfico)")
 
