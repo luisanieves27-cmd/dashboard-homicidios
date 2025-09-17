@@ -14,12 +14,13 @@ df.columns = df.columns.str.strip()
 # Procesar fechas
 df["FECHA HECHO"] = pd.to_datetime(df["FECHA HECHO"], errors="coerce")
 
-# Crear columnas de año y mes en español
+# Crear diccionario de meses en español
 meses_es = {
     1: "Enero", 2: "Febrero", 3: "Marzo", 4: "Abril",
     5: "Mayo", 6: "Junio", 7: "Julio", 8: "Agosto",
     9: "Septiembre", 10: "Octubre", 11: "Noviembre", 12: "Diciembre"
 }
+
 df["AÑO"] = df["FECHA HECHO"].dt.year
 df["MES"] = df["FECHA HECHO"].dt.month.map(meses_es)
 
@@ -29,7 +30,7 @@ azul2 = "#0055A4"
 azul3 = "#0077CC"
 azul4 = "#3399FF"
 
-# ================= Título =================
+# ================= Título y descripción =================
 st.markdown(f"<h1 style='color:{azul2};'>📊 Tablero de Homicidios en Colombia</h1>", unsafe_allow_html=True)
 st.markdown("Análisis interactivo de los homicidios registrados en la base de datos oficial.")
 
@@ -64,7 +65,7 @@ col5.metric("Departamento crítico", depto_top)
 st.markdown("---")
 
 # ================= Pestañas =================
-tab1, tab2, tab3, tab4 = st.tabs(["📈 Tendencias", "📊 Comparativos", "📍 Municipios", "📑 Respuestas"])
+tab1, tab2, tab3 = st.tabs(["📈 Tendencias", "📊 Comparativos", "📍 Municipios"])
 
 # 📈 Tendencias
 with tab1:
@@ -79,7 +80,6 @@ with tab1:
     fig2 = px.histogram(df_filtrado, x="MES", y="CANTIDAD",
                         histfunc="sum",
                         title="Distribución mensual de homicidios",
-                        category_orders={"MES": list(meses_es.values())},
                         color_discrete_sequence=[azul3])
     st.plotly_chart(fig2, use_container_width=True)
 
@@ -108,52 +108,11 @@ with tab2:
 # 📍 Municipios
 with tab3:
     st.subheader("Top municipios con más homicidios")
-    if not df_filtrado.empty:
-        top_mun = df_filtrado.groupby("MUNICIPIO")["CANTIDAD"].sum().reset_index().sort_values(by="CANTIDAD", ascending=False).head(10)
-        fig6 = px.bar(top_mun, x="MUNICIPIO", y="CANTIDAD",
-                      title="10 municipios con mayor cantidad de homicidios",
-                      color="CANTIDAD",
-                      color_continuous_scale="Blues")
-        st.plotly_chart(fig6, use_container_width=True)
-        st.dataframe(top_mun)
-    else:
-        st.markdown("No hay datos para mostrar en los municipios seleccionados.")
+    top_mun = df_filtrado.groupby("MUNICIPIO")["CANTIDAD"].sum().reset_index().sort_values(by="CANTIDAD", ascending=False).head(10)
+    fig6 = px.bar(top_mun, x="MUNICIPIO", y="CANTIDAD",
+                  title="10 municipios con mayor cantidad de homicidios",
+                  color="CANTIDAD",
+                  color_continuous_scale="Blues")
+    st.plotly_chart(fig6, use_container_width=True)
 
-# 📑 Respuestas automáticas
-with tab4:
-    st.subheader("📑 Respuestas automáticas a las preguntas (con soporte gráfico)")
-
-    # 1️⃣ Cundinamarca
-    df_cund = df[df["DEPARTAMENTO"] == "CUNDINAMARCA"]
-    if not df_cund.empty:
-        top_mun_cund = df_cund.groupby("MUNICIPIO")["CANTIDAD"].sum().idxmax()
-        df_cund_mun = df_cund[df_cund["MUNICIPIO"] == top_mun_cund]
-        if not df_cund_mun.empty:
-            top_gen_cund = df_cund_mun.groupby("GENERO")["CANTIDAD"].sum().idxmax()
-            casos_cund = df_cund_mun.groupby("GENERO")["CANTIDAD"].sum().max()
-            st.markdown(f"**1️⃣ Cundinamarca:** Municipio con más homicidios: **{top_mun_cund}**. "
-                        f"Género más afectado: **{top_gen_cund}** con **{casos_cund} casos**.")
-            fig_q1 = px.bar(df_cund_mun, x="GENERO", y="CANTIDAD",
-                            title=f"Género más afectado en {top_mun_cund} (Cundinamarca)",
-                            color="GENERO",
-                            color_discrete_sequence=px.colors.sequential.Blues)
-            st.plotly_chart(fig_q1, use_container_width=True)
-        else:
-            st.markdown("No hay datos de homicidios en este municipio.")
-    else:
-        st.markdown("No hay datos de homicidios en Cundinamarca.")
-
-    # 2️⃣ Valle (VALLE)
-    df_valle = df[df["DEPARTAMENTO"] == "VALLE"]
-    if not df_valle.empty:
-        top_mun_valle = df_valle.groupby("MUNICIPIO")["CANTIDAD"].sum().idxmax()
-        df_valle_masc = df_valle[(df_valle["MUNICIPIO"] == top_mun_valle) & (df_valle["GENERO"] == "MASCULINO")]
-        if not df_valle_masc.empty:
-            arma_valle = df_valle_masc.groupby("ARMA MEDIO")["CANTIDAD"].sum().idxmax()
-            casos_valle = df_valle_masc.groupby("ARMA MEDIO")["CANTIDAD"].sum().max()
-            st.markdown(f"**2️⃣ Valle:** Municipio con más homicidios: **{top_mun_valle}**. "
-                        f"Arma más usada contra hombres: **{arma_valle}** con **{casos_valle} casos**.")
-            fig_q2 = px.bar(df_valle_masc, x="ARMA MEDIO", y="CANTIDAD",
-                            title=f"Armas usadas contra hombres en {top_mun_valle} (Valle)",
-                            color="ARMA MEDIO",
-                            color_discrete_sequence=px.colors.sequential.Blues_r)
+    st.dataframe(top_mun)
